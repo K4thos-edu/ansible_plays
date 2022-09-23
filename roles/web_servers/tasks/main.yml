@@ -1,29 +1,19 @@
-- name: install apache and php (Ubuntu)
-  tags: apache,apache2,ubuntu
-  apt:
+- name: install apache and php packages
+  tags: apache,httpd,php
+  package:
     name:
-      - apache2
-      - libapache2-mod-php
+      - "{{ apache_package_name }}"
+      - "{{ php_package_name }}"
     state: latest
-  when: ansible_distribution == "Ubuntu"
 
-- name: install apache and php (Amazon Linux)
-  tags: apache,httpd,amazon
-  yum:
-    name:
-      - httpd
-      - php
-    state: latest
-  when: ansible_distribution == "Amazon"
-
-- name: start httpd (Amazon Linux)
-  tags: apache,httpd,amazon
+- name: start and enable apache service
+  tags: apache,httpd
   service:
-    name: httpd
+    name: "{{ apache_service }}"
     state: started
     enabled: yes
-  when: ansible_distribution == "Amazon"
 
+# just an example for lineinfile
 - name: change e-mail address for admin (Amazon Linux)
   tags: apache,httpd,amazon
   lineinfile:
@@ -31,19 +21,19 @@
     regexp: '^ServerAdmin'
     line: ServerAdmin somebody@somewhere.net
   when: ansible_distribution == "Amazon"
-  register: httpd
+  register: apache
 
-- name: restart httpd (Amazon Linux)
-  tags: apache,httpd,amazon
+- name: restart httpd
+  tags: apache,httpd
   service:
-    name: httpd
+    name: "{{ apache_service }}"
     state: restarted
-  # attention: if the `register: httpd` was initiated in another play,
+  # attention: if the `register: apache` was initiated in another play,
   # without making a change, this condition would not register as `changed`
-  when: httpd.changed
+  when: apache.changed
 
 - name: copy default html file for site
-  tags: apache,apache2,httpd
+  tags: apache,httpd
   copy:
     src: default_site.html
     dest: /var/www/html/index.html
