@@ -59,6 +59,32 @@
       state: latest
     when: ansible_distribution == "Amazon"
 
+  - name: start httpd (Amazon Linux)
+    tags: apache,httpd,amazon
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+    when: ansible_distribution == "Amazon"
+
+  - name: change e-mail address for admin (Amazon Linux)
+    tags: apache,httpd,amazon
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somewhere.net
+    when: ansible_distribution == "Amazon"
+    register: httpd
+
+  - name: restart httpd (Amazon Linux)
+    tags: apache,httpd,amazon
+    service:
+      name: httpd
+      state: restarted
+    # attention: if the `register: httpd` was initiated in another play,
+    # without making a change, this condition would not register as `changed`
+    when: httpd.changed
+
   - name: copy default html file for site
     tags: apache,apache2,httpd
     copy:
