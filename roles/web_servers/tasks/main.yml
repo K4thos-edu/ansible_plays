@@ -21,16 +21,7 @@
     regexp: '^ServerAdmin'
     line: ServerAdmin somebody@somewhere.net
   when: ansible_distribution == "Amazon"
-  register: apache
-
-- name: restart httpd
-  tags: apache,httpd
-  service:
-    name: "{{ apache_service }}"
-    state: restarted
-  # attention: if the `register: apache` was initiated in another play,
-  # without making a change, this condition would not register as `changed`
-  when: apache.changed
+  notify: restart_apache
 
 - name: copy default html file for site
   tags: apache,httpd
