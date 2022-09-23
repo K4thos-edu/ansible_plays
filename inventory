@@ -1,2 +1,2 @@
-ubuntu@34.205.144.243
-ec2-user@44.201.149.188
+ubuntu@34.205.144.243 apache_package=apache2 php_package=libapache2-mod-php
+ec2-user@44.201.149.188 apache_package=httpd php_package=php
