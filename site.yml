@@ -4,19 +4,32 @@
   become: true
   pre_tasks:
 
-  - name: install updates (Amazon Linux)
+  - name: install repo cache (Amazon Linux)
     tags: always
     yum:
-      update_only: yes
+      #update_only: yes # already handled by bootstrap.yml
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Amazon"
 
-  - name: install updates (Ubuntu)
+  - name: install repo cache (Ubuntu)
     tags: always
     apt:
-      #update_only: yes # not supported by apt
+      #upgrade: yes # already handled by bootstrap.yml
       update_cache: yes
+    changed_when: false
     when: ansible_distribution == "Ubuntu"
+
+#- hosts: all
+#  become: true
+#  tasks:
+  
+#  - name: key management
+#    tags: always
+#    authorized_key:
+#      user: someone
+#      key: "public ssh-key"
+#      #state: absent
 
 #- hosts: workstations
 #  become: true
