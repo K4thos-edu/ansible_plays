@@ -1,3 +1,7 @@
 apache_package_name: httpd
 apache_service: httpd
 php_package_name: php
+
+# templates
+ssh_users: "joy simone"
+ssh_template_file: sshd_config_amazon.j2
