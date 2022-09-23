@@ -5,12 +5,14 @@
   pre_tasks:
 
   - name: install updates (Amazon Linux)
+    tags: always
     yum:
       update_only: yes
       update_cache: yes
     when: ansible_distribution == "Amazon"
 
   - name: install updates (Ubuntu)
+    tags: always
     apt:
       #update_only: yes # not supported by apt
       update_cache: yes
@@ -22,6 +24,7 @@
   tasks:
 
   - name: install apache and php for Ubuntu servers
+    tags: apache,apache2,ubuntu
     apt:
       name:
         - apache2
@@ -30,6 +33,7 @@
     when: ansible_distribution == "Ubuntu"
 
   - name: install apache and php for Amazon Linux servers
+    tags: apache,httpd,amazon
     yum:
       name:
         - httpd
@@ -42,6 +46,7 @@
   tasks:
 
   - name: install mariadb package
+    tags: db,mariadb
     package:
       name: mariadb-server
       state: latest
@@ -52,6 +57,7 @@
   tasks:
 
   - name: install samba package
+    tags: samba
     package:
       name: samba
       state: latest
