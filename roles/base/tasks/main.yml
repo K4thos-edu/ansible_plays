@@ -1,0 +1,6 @@
+#- name: key management
+#  tags: always
+#  authorized_key:
+#    user: someone
+#    key: "public ssh-key"
+#    #state: absent

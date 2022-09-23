@@ -7,7 +7,6 @@
   - name: install repo cache (Amazon Linux)
     tags: always
     yum:
-      #update_only: yes # already handled by bootstrap.yml
       update_cache: yes
     changed_when: false
     when: ansible_distribution == "Amazon"
@@ -15,115 +14,31 @@
   - name: install repo cache (Ubuntu)
     tags: always
     apt:
-      #upgrade: yes # already handled by bootstrap.yml
       update_cache: yes
     changed_when: false
     when: ansible_distribution == "Ubuntu"
 
-#- hosts: all
-#  become: true
-#  tasks:
-  
-#  - name: key management
-#    tags: always
-#    authorized_key:
-#      user: someone
-#      key: "public ssh-key"
-#      #state: absent
+- hosts: all
+  become: true
+  roles:
+    - base
 
-#- hosts: workstations
-#  become: true
-#  tasks:
-
-#  - name: install unzip
-#    tags: workstation
-#    package:
-#      name: unzip
-
-#  - name: install terraform
-#    tags: workstation
-#    unarchive:
-#      src: https://releases.hashicorp.com/terraform/1.3.0/terraform_1.3.0_linux_amd64.zip
-#      dest: /usr/local/bin
-#      remote_src: yes
-#      mode: 0755
-#      owner: root
-#      group: root
+- hosts: workstations
+  become: true
+  roles:
+    - workstations
 
 - hosts: web_servers
   become: true
-  tasks:
-
-  - name: install apache and php for Ubuntu servers
-    tags: apache,apache2,ubuntu
-    apt:
-      name:
-        - apache2
-        - libapache2-mod-php
-      state: latest
-    when: ansible_distribution == "Ubuntu"
-
-  - name: install apache and php for Amazon Linux servers
-    tags: apache,httpd,amazon
-    yum:
-      name:
-        - httpd
-        - php
-      state: latest
-    when: ansible_distribution == "Amazon"
-
-  - name: start httpd (Amazon Linux)
-    tags: apache,httpd,amazon
-    service:
-      name: httpd
-      state: started
-      enabled: yes
-    when: ansible_distribution == "Amazon"
-
-  - name: change e-mail address for admin (Amazon Linux)
-    tags: apache,httpd,amazon
-    lineinfile:
-      path: /etc/httpd/conf/httpd.conf
-      regexp: '^ServerAdmin'
-      line: ServerAdmin somebody@somewhere.net
-    when: ansible_distribution == "Amazon"
-    register: httpd
-
-  - name: restart httpd (Amazon Linux)
-    tags: apache,httpd,amazon
-    service:
-      name: httpd
-      state: restarted
-    # attention: if the `register: httpd` was initiated in another play,
-    # without making a change, this condition would not register as `changed`
-    when: httpd.changed
-
-  - name: copy default html file for site
-    tags: apache,apache2,httpd
-    copy:
-      src: default_site.html
-      dest: /var/www/html/index.html
-      owner: root
-      group: root
-      mode: 0644
+  roles:
+    - web_servers
 
 - hosts: db_servers
   become: true
-  tasks:
-
-  - name: install mariadb package
-    tags: db,mariadb
-    package:
-      name: mariadb-server
-      state: latest
-    when: ansible_distribution == "Ubuntu"
+  roles:
+    - db_servers
 
 - hosts: file_servers
   become: true
-  tasks:
-
-  - name: install samba package
-    tags: samba
-    package:
-      name: samba
-      state: latest
+  roles:
+    - file_servers
